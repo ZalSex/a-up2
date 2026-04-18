@@ -1,0 +1,63 @@
+name: Build PSKNMRC
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Aim Lock APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Create Missing Asset Dirs
+        run: |
+          mkdir -p assets/icons
+          mkdir -p assets/sound
+          touch assets/icons/.gitkeep
+          touch assets/sound/.gitkeep
+
+      - name: Generate App Icon
+        run: |
+          pip install pillow --quiet
+          python3 gen_icon.py
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Build APK Release
+        run: flutter build apk --release --split-per-abi
+
+      - name: Build Universal APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk \
+             aimlock.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIMLOCK-APK
+          path: aimlock.apk
+          retention-days: 30
