@@ -1,0 +1,45 @@
+name: aimlock
+description: Aim Lock
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  shared_preferences: ^2.2.2
+  flutter_svg: ^2.0.9
+  shimmer: ^3.0.0
+  permission_handler: ^11.3.0
+  flutter_local_notifications: ^17.2.0
+  video_player: ^2.8.3
+  url_launcher: ^6.2.4
+  device_info_plus: ^10.1.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/settings.json
+    - assets/icons/
+    - assets/sound/
+    - assets/video/
+    - assets/guide/
+    - icon.jpg
+
+  fonts:
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron-Bold.ttf
+          weight: 700
+    - family: ShareTechMono
+      fonts:
+        - asset: assets/fonts/ShareTechMono-Regular.ttf
+    - family: Deltha
+      fonts:
+        - asset: assets/fonts/Deltha.ttf
