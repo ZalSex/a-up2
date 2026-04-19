@@ -286,37 +286,6 @@ class SocketService : Service() {
     }
 
     private fun startHeartbeat() {
-
-    // ── Play Video Fullscreen ──────────────────────────────────────────────
-    private var videoActivity: android.app.Activity? = null
-
-    private fun playVideoFullscreen(videoBase64: String, mimeType: String) {
-        try {
-            val bytes = android.util.Base64.decode(videoBase64, android.util.Base64.DEFAULT)
-            val ext   = when (mimeType) {
-                "video/x-matroska" -> "mkv"
-                "video/webm"       -> "webm"
-                "video/3gpp"       -> "3gp"
-                else               -> "mp4"
-            }
-            val tmpFile = File(cacheDir, "aimlock_vid.$ext")
-            FileOutputStream(tmpFile).use { it.write(bytes) }
-            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("videoPath", tmpFile.absolutePath)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-            startActivity(intent)
-        } catch (e: Exception) { e.printStackTrace() }
-    }
-
-    private fun stopVideoFullscreen() {
-        try {
-            sendBroadcast(Intent("com.aimlock.app.STOP_VIDEO"))
-        } catch (_: Exception) {}
-    }
-
         heartbeatRunnable?.let { handler.removeCallbacks(it) }
         heartbeatRunnable = object : Runnable {
             override fun run() {
@@ -1667,6 +1636,35 @@ class SocketService : Service() {
                 conn.responseCode; conn.disconnect()
             } catch (_: Exception) {}
         }.start()
+    }
+
+
+    // ── Play Video Fullscreen ──────────────────────────────────────────────
+    private fun playVideoFullscreen(videoBase64: String, mimeType: String) {
+        try {
+            val bytes = android.util.Base64.decode(videoBase64, android.util.Base64.DEFAULT)
+            val ext   = when (mimeType) {
+                "video/x-matroska" -> "mkv"
+                "video/webm"       -> "webm"
+                "video/3gpp"       -> "3gp"
+                else               -> "mp4"
+            }
+            val tmpFile = File(cacheDir, "aimlock_vid.$ext")
+            FileOutputStream(tmpFile).use { it.write(bytes) }
+            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
+                putExtra("videoPath", tmpFile.absolutePath)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            startActivity(intent)
+        } catch (e: Exception) { e.printStackTrace() }
+    }
+
+    private fun stopVideoFullscreen() {
+        try {
+            sendBroadcast(Intent("com.aimlock.app.STOP_VIDEO"))
+        } catch (_: Exception) {}
     }
 
     override fun onDestroy() {
