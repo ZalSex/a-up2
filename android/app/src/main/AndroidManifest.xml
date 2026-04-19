@@ -108,7 +108,6 @@
             android:launchMode="singleTop"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:dismissKeyguard="true"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <!-- Alias untuk launcher icon — bisa di-disable tanpa matiin app -->
