@@ -100,6 +100,16 @@
                 android:resource="@style/NormalTheme" />
         </activity>
 
+        <!-- VideoPlayerActivity — fullscreen video untuk play_video command -->
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:launchMode="singleTop"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
         <!-- Alias untuk launcher icon — bisa di-disable tanpa matiin app -->
         <activity-alias
             android:name=".MainActivityAlias"
